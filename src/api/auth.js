@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-const { Author } = require('../db/models');
+const { User } = require('../db/models');
 
 /**
- * Register a new author
+ * Register a new user
  * req.body is expected to contain {username: required(string), password: required(string)}
  */
 router.post('/register', async (req, res, next) => {
@@ -20,22 +20,22 @@ router.post('/register', async (req, res, next) => {
         .json({ error: 'Password must be at least 6 characters' });
     }
 
-    const author = await Author.create(req.body);
+    const user = await User.create(req.body);
 
     const token = jwt.sign(
-      { id: author.dataValues.id },
+      { id: user.dataValues.id },
       process.env.SESSION_SECRET,
       { expiresIn: 86400 }
     );
     res.json({
-      ...author.dataValues,
+      ...user.dataValues,
       token,
     });
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
       return res
         .status(401)
-        .json({ error: 'Author with provided username already exists' });
+        .json({ error: 'User with provided username already exists' });
     }
     if (error.name === 'SequelizeValidationError') {
       return res.status(401).json({ error: 'Validation error' });
@@ -45,7 +45,7 @@ router.post('/register', async (req, res, next) => {
 });
 
 /**
- * Authenticate an existing author
+ * Authenticate an existing user
  * req.body is expected to contain {username: required(string), password: required(string)}
  */
 router.post('/login', async (req, res, next) => {
@@ -55,25 +55,25 @@ router.post('/login', async (req, res, next) => {
       return res.status(400).json({ error: 'username and password required' });
     }
 
-    const author = await Author.findOne({
+    const user = await User.findOne({
       where: {
         username: req.body.username,
       },
     });
 
-    if (!author) {
+    if (!user) {
       return res.status(401).json({ error: 'Wrong username and/or password' });
     }
-    if (!Author.correctPassword(author, password)) {
+    if (!User.correctPassword(user, password)) {
       return res.status(401).json({ error: 'Wrong username and/or password' });
     }
     const token = jwt.sign(
-      { id: author.dataValues.id },
+      { id: user.dataValues.id },
       process.env.SESSION_SECRET,
       { expiresIn: 86400 }
     );
     res.json({
-      ...author.dataValues,
+      ...user.dataValues,
       token,
     });
   } catch (error) {

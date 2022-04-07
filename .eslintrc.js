@@ -5,7 +5,7 @@ module.exports = {
   },
   extends: ['airbnb-base'],
   parserOptions: {
-    ecmaVersion: 9,
+    ecmaVersion: 12,
   },
   rules: {
     'comma-dangle': 0,
@@ -14,5 +14,6 @@ module.exports = {
     'no-return-assign': 0,
     'consistent-return': 0,
     'func-names': 0,
+    'object-curly-newline': 0,
   },
 };

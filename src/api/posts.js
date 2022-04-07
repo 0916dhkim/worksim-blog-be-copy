@@ -1,5 +1,5 @@
 const express = require('express');
-const Post = require('../db/models/post');
+const { Post, UserPost } = require('../db/models');
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/', async (req, res, next) => {
   try {
     // Validation
-    if (!req.author) {
+    if (!req.user) {
       return res.sendStatus(401);
     }
 
@@ -30,7 +30,10 @@ router.post('/', async (req, res, next) => {
       values.tags = tags.join(',');
     }
     const post = await Post.create(values);
-    await post.setAuthor(req.author);
+    await UserPost.create({
+      userId: req.user.id,
+      postId: post.id,
+    });
 
     res.json({ post });
   } catch (error) {

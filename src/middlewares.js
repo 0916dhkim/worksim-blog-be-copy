@@ -5,7 +5,7 @@ function notFound(req, res, next) {
   const error = new Error(`Not Found - ${req.originalUrl}`);
   next(error);
 }
-const { Author } = require('./db/models');
+const { User } = require('./db/models');
 
 /* eslint-disable-next-line no-unused-vars */
 function errorHandler(err, req, res, next) {
@@ -25,14 +25,14 @@ function auth(req, res, next) {
       if (err) {
         return next();
       }
-      Author.findOne({
+      User.findOne({
         where: { id: decoded.id },
       })
-        .then((author) => {
-          if (!author) {
-            throw new Error('No author found with provided token');
+        .then((user) => {
+          if (!user) {
+            throw new Error('No user found with provided token');
           }
-          req.author = author;
+          req.user = user;
           return next();
         })
         .catch(() => {

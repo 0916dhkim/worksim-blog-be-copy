@@ -1,17 +1,20 @@
-const Author = require('./author');
+const User = require('./user');
 const Post = require('./post');
+const UserPost = require('./user_post');
 
-// associations
-
-Author.hasMany(Post, {
-  foreignKey: 'authorId',
+User.belongsToMany(Post, {
+  through: UserPost,
 });
-Post.belongsTo(Author, {
-  as: 'author',
-  foreignKey: 'authorId',
+Post.belongsToMany(User, {
+  through: UserPost,
 });
+User.hasMany(UserPost);
+UserPost.belongsTo(User);
+Post.hasMany(UserPost);
+UserPost.belongsTo(Post);
 
 module.exports = {
-  Author,
+  User,
   Post,
+  UserPost,
 };
